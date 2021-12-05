@@ -1,68 +1,79 @@
-![KonText screenshot](https://github.com/czcorpus/kontext/blob/master/doc/images/kontext-screenshot1.jpg)
-
-
 ## Contents
 
 * [Introduction](#introduction)
-* [Features](#features)
 * [Installation](#installation)
-* [Customization and contribution](#customization-and-contribution)
-* [Notable users](#notable-users)
-* [How to cite](#how-to-cite-kontext)
 
 ## Introduction
 
-KonText is an **advanced corpus query interface** and corpus data **integration platform** built around corpus search engine [Manatee-open](http://nlp.fi.muni.cz/trac/noske). It is written in Python 3 and TypeScript and it runs on any major Linux distribution. The development is maintained by the [Institute of the Czech National Corpus](http://ucnk.ff.cuni.cz/).
-
-## Features
-
-* fully **editable query chain**
-    * any operation from a user defined sequence (e.g. query -&gt; filter -&gt; sample -&gt; sorting) can be changed
-    and the whole sequence is then re-executed.
-* multiple search modes:
-    * concordance,
-    * paradigmatic query,
-    * word list
-* simple and advanced query types
-    * **advanced CQL editor** with **syntax highlighting** and **attribute recognition**
-    * **interactive PoS tag composing tool** for positional and key-value tagsets
-    * customizable query suggestions and simple type query refinement (e.g. for homonym disambiguation)
-* support for **spoken corpora**
-    * defined text segments can be played back as audio
-    * KWIC detail with **easily distinguishable speeches**
-* rich **concordance view options and tools**
-    * any positional attribute can be set as primary
-    * multiple ways how to display other attributes
-    * **user-defined line groups** - filtering, reviewing groups ratios
-    * tokens and KWICs can be connected to external data services (e.g. dictionaries, encyclopedias)
-* **rich subcorpus-related functionality**
-    * a subcorpus can be either private or published
-    * text types metadata can be gradually refined to a specific subcorpus ("which publishers are there in case only *fiction* is selected?")
-    * a **custom text types ratio** can be defined ("give me 20% fiction and 80% journalism")
-* **frequency distribution**
-    * univariate
-        * positional attributes (including tuples of multiple attributes per token)
-        * structural attributes
-    * **multivariate distribution** (2 dimensions) for both positional and structural attributes
-* collocation analysis
-* **persistent URLs** - any result page can be easily shared even if the original query is megabytes long
-* access to **previous queries**, named queries
-* convenient corpus access
-    * finding corpus by a keyword (tag), size, description
-    * adding corpus to **favorites** (incl. subcorpora, aligned corpora)
-* saving result to Excel, CSV, XML, TXT
-* integrability with existing information systems
-
-
-## Internal features
-
-* modern client-side application (written in TypeScript, event stream architecture, React components, extensible)
-* server-side written as a **WSGI application** with fully **decoupled background concordance/frequency/collocation calculation** (using an integrated worker server)
-* modular code design with dynamically loadable plug-ins providing custom functionality implementation (e.g. custom database
-adapters, authentication method, corpus listing widgets, HTTP session management)
+This is a fork of the repository for [KonText](https://github.com/czcorpus/kontext). For a full description of KonText and it's functionalities, refer to the main repository. This fork is being developed in order to integrate KonText with corpora tagged by [DocuScope](https://www.cmu.edu/dietrich/english/research-and-publications/docuscope.html).
 
 
 ## Installation
+
+Note that the developers of KonText recommend insalling using Docker. However, I have had success installing using LXD. Below, I will include my directions for LXD installation, as well as the original documentation for Docker installation.
+
+Also note that while KonText runs on Python, it is built atop Manatee, which is a component of [No Sketch Engine](https://nlp.fi.muni.cz/trac/noske). Thus, the install script downloads and compiles Manatee, as well as installing a default corpus called **susanne**.
+
+### LXD
+
+A very useful and basic guide to LXD and Linux containters [can be found here](https://ubuntu.com/blog/lxd-2-0-your-first-lxd-container/) and [here](https://linuxcontainers.org/lxd/docs/master/)
+
+[1] Install LXD using Snap:
+
+```shell
+snap install lxd
+```
+
+[2] Add any necessary non-root accounts to the Unix group. This may be required for users to access needed directories and run commands. You can find [instructions here](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-lxd-on-ubuntu-20-04).
+
+[3] Configure LXD options. Again, you can follow [these directions](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-lxd-on-ubuntu-20-04).
+
+```shell
+sudo lxd init
+```
+[4] Create a container called **kontext-container**:
+
+```shell
+lxc launch ubuntu:bionic kontext-container
+```
+
+[5] Note the container's IP address from the output given by **list**:
+
+```shell
+lxc list
+```
+
+[6] If the container isn't running, it can be started using:
+
+```shell
+lxc start kontext-container
+```
+
+[7] Start a shell inside the container:
+
+```shell
+lxc shell kontext-container
+```
+[8] In the container, git-clone the KonText git repo to a directory of your choice (e.g. /opt/kontext), set the required permissions and run the install script.
+
+```shell
+sudo apt-get update
+sudo apt-get install -y ca-certificates git
+git clone https://github.com/browndw/kontext.git /opt/kontext/
+python3 /opt/kontext/scripts/install/install.py
+```
+[9] To start KonText, enter the following command in the KonText install root directory (i.e. /opt/kontext):
+
+```shell
+cd /opt/kontext
+sudo -u www-data python3 public/app.py --address 127.0.0.1 --port 8080
+```
+[10] Open a browser and input the IP address you noted at step 5 (e.g., 10.65.23.28). The container can be stopped by exiting from the shell and using:
+
+```shell
+lxc stop kontext-container
+```
+
 
 ### Docker
 
