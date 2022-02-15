@@ -26,6 +26,13 @@ snap install lxd
 
 [2] Add any necessary non-root accounts to the Unix group. This may be required for users to access needed directories and run commands. You can find [instructions here](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-lxd-on-ubuntu-20-04).
 
+For example, my installation was on a a Parallels VM. So I needed to add **parallels** as a user:
+
+```shell
+sudo adduser parallels lxd
+su parallels
+```
+
 [3] Configure LXD options. Again, you can follow [these directions](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-lxd-on-ubuntu-20-04).
 
 ```shell
@@ -34,7 +41,7 @@ sudo lxd init
 [4] Create a container called **kontext-container**:
 
 ```shell
-lxc launch ubuntu:bionic kontext-container
+lxc launch ubuntu:bionic/amd64 kontext-container
 ```
 
 [5] Note the container's IP address from the output given by **list**:
@@ -62,6 +69,8 @@ sudo apt-get install -y ca-certificates git
 git clone https://github.com/browndw/kontext.git /opt/kontext/
 python3 /opt/kontext/scripts/install/install.py
 ```
+When the build is complete, note the default username and password.
+
 [9] To start KonText, enter the following command in the KonText install root directory (i.e. /opt/kontext):
 
 ```shell
